@@ -20,6 +20,15 @@ const getPriorityColor = (priority: string) => {
   }
 };
 
+const getPriorityText = (priority: string): string => {
+  switch (priority) {
+    case 'high': return 'Высокий';
+    case 'medium': return 'Средний';
+    case 'low': return 'Низкий';
+    default: return priority;
+  }
+};
+
 const SortableTaskItem: React.FC<SortableTaskItemProps> = ({
   task,
   onToggle,
@@ -47,7 +56,7 @@ const SortableTaskItem: React.FC<SortableTaskItemProps> = ({
     <div
       ref={setNodeRef}
       style={style}
-      className={`card p-4 group hover:shadow-xl transition-all ${isCompleted ? 'opacity-75' : ''}`}
+      className={`card p-4 group hover:shadow-md transition-all ${isCompleted ? 'opacity-75' : ''}`}
     >
       <div className="flex items-start gap-3">
         <div
@@ -55,12 +64,12 @@ const SortableTaskItem: React.FC<SortableTaskItemProps> = ({
           {...listeners}
           className="cursor-grab active:cursor-grabbing mt-1 opacity-0 group-hover:opacity-100 transition-opacity"
         >
-          <GripVertical className="w-5 h-5 text-gray-400" />
+          <GripVertical className="w-4 h-4 text-gray-400" />
         </div>
 
         <button
           onClick={() => onToggle(task)}
-          className="flex-shrink-0 mt-1 hover:scale-110 transition-transform"
+          className="flex-shrink-0 mt-0.5 hover:scale-105 transition-transform"
         >
           {isCompleted ? (
             <CheckCircle className="w-5 h-5 text-green-500" />
@@ -70,7 +79,7 @@ const SortableTaskItem: React.FC<SortableTaskItemProps> = ({
         </button>
 
         <div className="flex-1">
-          <p className={`text-gray-800 dark:text-gray-200 font-medium ${isCompleted ? 'line-through text-gray-500' : ''}`}>
+          <p className={`text-gray-800 dark:text-gray-200 font-medium ${isCompleted ? 'line-through text-gray-500 dark:text-gray-500' : ''}`}>
             {task.title}
           </p>
 
@@ -80,35 +89,36 @@ const SortableTaskItem: React.FC<SortableTaskItemProps> = ({
             </p>
           )}
 
-          <div className="flex items-center gap-2 mt-2">
-            <span className={`text-xs px-2 py-1 rounded-full ${getPriorityColor(task.priority)}`}>
-              {task.priority === 'high' ? '🔴 Высокий' : task.priority === 'medium' ? '🟡 Средний' : '🟢 Низкий'}
+          <div className="flex flex-wrap items-center gap-2 mt-2">
+            <span className={`text-xs px-2 py-0.5 rounded-full ${getPriorityColor(task.priority)}`}>
+              {getPriorityText(task.priority)}
             </span>
 
             {task.deadline && (
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                📅 {new Date(task.deadline).toLocaleDateString()}
+              <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                <span>Дедлайн:</span>
+                <span>{new Date(task.deadline).toLocaleDateString('ru-RU')}</span>
               </span>
             )}
 
             {task.status === 'completed' && (
-              <span className="text-xs text-green-600 dark:text-green-400">
-                ✓ Выполнена
-              </span>
+              <span className="text-xs text-green-600 dark:text-green-400">Выполнена</span>
             )}
           </div>
         </div>
 
-        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
+        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
           <button
             onClick={() => onEdit(task)}
-            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            title="Редактировать"
           >
             <Edit2 className="w-4 h-4 text-blue-500" />
           </button>
           <button
             onClick={() => onDelete(task._id)}
-            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            title="Удалить"
           >
             <Trash2 className="w-4 h-4 text-red-500" />
           </button>

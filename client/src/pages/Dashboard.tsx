@@ -11,7 +11,7 @@ import {
   LogOut,
   Plus,
   CheckCircle,
-  Sparkles,
+  LayoutDashboard,
   Moon,
   Sun,
   Loader2,
@@ -21,7 +21,9 @@ import {
   TrendingUp,
   Calendar,
   BarChart3,
-  Download
+  Download,
+  Target,
+  ListTodo
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -66,7 +68,7 @@ const Dashboard: React.FC = () => {
       const { data } = await api.post('/tasks', { title: newTaskTitle });
       setTasks([data, ...tasks]);
       setNewTaskTitle('');
-      toast.success('Задача создана!', { icon: '✨' });
+      toast.success('Задача создана');
     } catch (error) {
       toast.error('Ошибка создания задачи');
     }
@@ -101,12 +103,10 @@ const Dashboard: React.FC = () => {
 
   const handleReorder = async (reorderedTasks: Task[]) => {
     setTasks(reorderedTasks);
-
     const updates = reorderedTasks.map((task, index) => ({
       id: task._id,
       order: index
     }));
-
     try {
       await api.put('/tasks/reorder', { tasks: updates });
     } catch (error) {
@@ -148,30 +148,28 @@ const Dashboard: React.FC = () => {
   const completionRate = tasks.length > 0 ? Math.round((tasks.filter(t => t.status === 'completed').length / tasks.length) * 100) : 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300 pb-20 lg:pb-0">
-      <header className="sticky top-0 z-10 bg-white/80 dark:bg-dark-100/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-800">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300 pb-20 lg:pb-0">
+      <header className="sticky top-0 z-10 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-              <Sparkles className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-md">
+              <LayoutDashboard className="w-5 h-5 text-white" />
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              TaskFlow
-            </h1>
+            <h1 className="text-xl sm:text-2xl font-bold gradient-text">TaskFlow</h1>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={() => setIsExportModalOpen(true)}
-              className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all"
-              title="Экспортировать задачи"
+              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all"
+              title="Экспорт задач"
             >
               <Download className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
 
             <Link
               to="/statistics"
-              className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all hidden sm:inline-flex"
+              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all hidden sm:inline-flex"
               title="Статистика"
             >
               <BarChart3 className="w-5 h-5" />
@@ -179,7 +177,7 @@ const Dashboard: React.FC = () => {
 
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all"
+              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all"
             >
               {isDarkMode ? <Sun className="w-4 h-4 sm:w-5 sm:h-5" /> : <Moon className="w-4 h-4 sm:w-5 sm:h-5" />}
             </button>
@@ -191,7 +189,7 @@ const Dashboard: React.FC = () => {
               </div>
               <button
                 onClick={logout}
-                className="btn-secondary flex items-center gap-1 sm:gap-2 px-3 sm:px-6 py-2 text-sm sm:text-base"
+                className="btn-secondary flex items-center gap-1 sm:gap-2 px-3 sm:px-5 py-2 text-sm"
               >
                 <LogOut className="w-4 h-4" />
                 <span className="hidden sm:inline">Выйти</span>
@@ -201,26 +199,26 @@ const Dashboard: React.FC = () => {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
+      <main className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8 animate-slide-up">
-          <div className="card p-4 sm:p-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+          <div className="card p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Всего задач</p>
-                <p className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white mt-1 sm:mt-2">{tasks.length}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Всего задач</p>
+                <p className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white mt-1">{tasks.length}</p>
               </div>
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" />
+                <ListTodo className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" />
               </div>
             </div>
           </div>
 
-          <div className="card p-4 sm:p-6">
+          <div className="card p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Выполнено</p>
-                <p className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white mt-1 sm:mt-2">
+                <p className="text-sm text-gray-500 dark:text-gray-400">Выполнено</p>
+                <p className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white mt-1">
                   {tasks.filter(t => t.status === 'completed').length}
                 </p>
               </div>
@@ -228,57 +226,57 @@ const Dashboard: React.FC = () => {
                 <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 dark:text-green-400" />
               </div>
             </div>
-            <div className="mt-3 sm:mt-4">
-              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 sm:h-2">
+            <div className="mt-3">
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
                 <div
-                  className="bg-gradient-to-r from-green-500 to-green-600 h-1.5 sm:h-2 rounded-full transition-all duration-500"
+                  className="bg-gradient-to-r from-green-500 to-green-600 h-1.5 rounded-full transition-all duration-500"
                   style={{ width: `${completionRate}%` }}
                 />
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 sm:mt-2">Прогресс: {completionRate}%</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5">Прогресс: {completionRate}%</p>
             </div>
           </div>
 
-          <div className="card p-4 sm:p-6">
+          <div className="card p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Активных задач</p>
-                <p className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white mt-1 sm:mt-2">
+                <p className="text-sm text-gray-500 dark:text-gray-400">Активных задач</p>
+                <p className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white mt-1">
                   {tasks.filter(t => t.status === 'pending').length}
                 </p>
               </div>
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center">
-                <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600 dark:text-orange-400" />
+                <Target className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600 dark:text-orange-400" />
               </div>
             </div>
           </div>
         </div>
 
         {/* Create Task Form */}
-        <div className="card p-4 sm:p-6 mb-6 sm:mb-8 animate-slide-up">
+        <div className="card p-5 mb-6 sm:mb-8">
           <form onSubmit={createTask} className="flex gap-2 sm:gap-3">
             <input
               type="text"
               value={newTaskTitle}
               onChange={(e) => setNewTaskTitle(e.target.value)}
-              placeholder="Что нужно сделать? ✨"
+              placeholder="Новая задача"
               className="input-field flex-1 text-sm sm:text-base"
             />
-            <button type="submit" className="btn-primary flex items-center gap-1 sm:gap-2 whitespace-nowrap px-3 sm:px-6">
+            <button type="submit" className="btn-primary flex items-center gap-1 sm:gap-2 px-4 sm:px-6">
               <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="hidden xs:inline text-sm sm:text-base">Добавить</span>
+              <span className="hidden xs:inline">Добавить</span>
             </button>
           </form>
         </div>
 
         {/* Filters */}
-        <div className="mb-4 sm:mb-6 animate-slide-up">
-          <div className="flex items-center justify-between mb-3 sm:mb-4">
+        <div className="mb-4 sm:mb-6">
+          <div className="flex items-center justify-between mb-3">
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-1 sm:gap-2 text-sm sm:text-base text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 transition-colors"
             >
-              <Filter className="w-4 h-4 sm:w-5 sm:h-5" />
+              <Filter className="w-4 h-4" />
               <span>Фильтры</span>
             </button>
             {(filter !== 'all' || searchQuery) && (
@@ -287,7 +285,7 @@ const Dashboard: React.FC = () => {
                   setFilter('all');
                   setSearchQuery('');
                 }}
-                className="text-xs sm:text-sm text-red-500 hover:text-red-600 transition-colors"
+                className="text-sm text-red-500 hover:text-red-600 transition-colors"
               >
                 Сбросить фильтры
               </button>
@@ -295,34 +293,34 @@ const Dashboard: React.FC = () => {
           </div>
 
           {showFilters && (
-            <div className="card p-4 animate-slide-down">
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+            <div className="card p-4">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Поиск задач..."
-                    className="input-field pl-9 sm:pl-10 text-sm sm:text-base"
+                    placeholder="Поиск задач"
+                    className="input-field pl-9 text-sm"
                   />
                 </div>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setFilter('all')}
-                    className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base transition-all ${filter === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'}`}
+                    className={`px-3 py-1.5 rounded-lg text-sm transition-all ${filter === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'}`}
                   >
                     Все
                   </button>
                   <button
                     onClick={() => setFilter('pending')}
-                    className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base transition-all ${filter === 'pending' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'}`}
+                    className={`px-3 py-1.5 rounded-lg text-sm transition-all ${filter === 'pending' ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'}`}
                   >
                     Активные
                   </button>
                   <button
                     onClick={() => setFilter('completed')}
-                    className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base transition-all ${filter === 'completed' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'}`}
+                    className={`px-3 py-1.5 rounded-lg text-sm transition-all ${filter === 'completed' ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'}`}
                   >
                     Выполненные
                   </button>
@@ -332,23 +330,17 @@ const Dashboard: React.FC = () => {
           )}
         </div>
 
-        {/* Tasks Lists with Drag & Drop */}
+        {/* Tasks Lists */}
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
           </div>
         ) : (
           <div className="grid lg:grid-cols-2 gap-6 sm:gap-8">
-            {/* Active Tasks */}
-            <div className="animate-slide-up">
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-3 sm:mb-4 flex items-center gap-2">
-                <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-500 rounded-full animate-pulse"></div>
+            <div className="space-y-3">
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-white flex items-center gap-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                 Активные задачи ({pendingTasks.length})
-                {pendingTasks.length > 1 && (
-                  <span className="text-xs text-gray-500 dark:text-gray-400 font-normal ml-2 hidden sm:inline">
-                    (Перетаскивайте для сортировки)
-                  </span>
-                )}
               </h2>
               <SortableTaskList
                 tasks={pendingTasks}
@@ -359,10 +351,9 @@ const Dashboard: React.FC = () => {
               />
             </div>
 
-            {/* Completed Tasks */}
-            <div className="animate-slide-up delay-100">
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-3 sm:mb-4 flex items-center gap-2">
-                <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full"></div>
+            <div className="space-y-3">
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-white flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                 Выполненные ({completedTasks.length})
               </h2>
               <SortableTaskList
