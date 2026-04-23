@@ -48,14 +48,14 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task, onSave }) 
     <Modal isOpen={isOpen} onClose={onClose} title={task ? 'Редактировать задачу' : 'Создать задачу'}>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Название *
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+            Название
           </label>
           <input
             type="text"
             {...register('title')}
             className="input-field"
-            placeholder="Что нужно сделать?"
+            placeholder="Название задачи"
           />
           {errors.title && (
             <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>
@@ -63,7 +63,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task, onSave }) 
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
             Описание
           </label>
           <textarea
@@ -77,40 +77,42 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task, onSave }) 
           )}
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Приоритет
-          </label>
-          <select {...register('priority')} className="input-field">
-            <option value="low">🟢 Низкий</option>
-            <option value="medium">🟡 Средний</option>
-            <option value="high">🔴 Высокий</option>
-          </select>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              Приоритет
+            </label>
+            <select {...register('priority')} className="input-field">
+              <option value="low">Низкий</option>
+              <option value="medium">Средний</option>
+              <option value="high">Высокий</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              Дедлайн
+            </label>
+            <input
+              type="date"
+              {...register('deadline')}
+              className="input-field"
+            />
+          </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Дедлайн
-          </label>
-          <input
-            type="date"
-            {...register('deadline')}
-            className="input-field"
-          />
-        </div>
-
-        <div className="flex gap-3 pt-4">
+        <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4">
           <button
             type="button"
             onClick={onClose}
-            className="btn-secondary flex-1"
+            className="btn-secondary w-full sm:w-auto"
           >
             Отмена
           </button>
           <button
             type="submit"
             disabled={isSubmitting}
-            className="btn-primary flex-1"
+            className="btn-primary w-full sm:w-auto"
           >
             {isSubmitting ? 'Сохранение...' : 'Сохранить'}
           </button>
