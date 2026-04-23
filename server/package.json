@@ -2,14 +2,11 @@
   "name": "taskflow-server",
   "version": "1.0.0",
   "description": "TaskFlow Backend API",
-  "type": "module",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "node --loader ts-node/esm src/server.ts",
-    "dev:watch": "node --loader ts-node/esm --watch src/server.ts",
+    "dev": "nodemon src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
-    "clean": "rm -rf dist"
+    "start": "node dist/server.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
